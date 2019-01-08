@@ -7,7 +7,7 @@ const port = process.env.PORT || 4000
 const hostname = '127.0.0.1'
 const HEADERS = {
 	'Content-Type': 'application/json',
-	'Authorization': 'Bearer xxxxx'
+	'Authorization': 'Bearer {E8hLTMRB8ih0niTXAzNCL26xHFZVIZTFOzuv5JPePXm5EoBlp6tsdgVov5iOpFN9L1B8niE4I6gHrRhIM60gHu0fI7Goqs7Sp9PSLRCmHZaj27lA5SariNFFcosCCj8b2ildH95pIyGE2CnvSN+YhwdB04t89/1O/w1cDnyilFU=}'
 }
 
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -15,26 +15,48 @@ app.use(bodyParser.json())
 
 // Push
 app.get('/webhook', (req, res) => {
-	// push block
+	const result = push('I am Lisa blackpink')
+	res.status(200).send({
+		msg: 'success',
+		success: 1,
+		date: new Date()
+	})
 })
 
 // Reply
 app.post('/webhook', (req, res) => {
 	// reply block
+	let reply_token = req.body.events[0].replyToken
+	reply(reply_token, 'Hello I love TESA')
+  res.sendStatus(200)
 })
 
 function push(msg) {
 	let body = JSON.stringify({
-    // push body
-  })
-  // curl
+		to: 'Ud0ddba9710e3e87899856dc317d4006c',
+		messages: [
+			{
+				type: 'text',
+				text: msg
+			}
+		]
+	})
+	curl('push', body)
 }
 
 function reply(reply_token, msg) {
 	let body = JSON.stringify({
-    // reply body
+    replyToken: reply_token,
+		messages: [{
+				type: 'text',
+				text: 'Hello'
+		},
+		{
+				type: 'text',
+				text: 'How are you?'
+		}]
   })
-  // curl
+  curl('reply', body)
 }
 
 function curl(method, body) {
@@ -44,6 +66,7 @@ function curl(method, body) {
 		body: body
 	}, (err, res, body) => {
 		console.log('status = ' + res.statusCode)
+		console.log('error = ' + err)
 	})
 }
 

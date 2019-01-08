@@ -27,7 +27,11 @@ app.get('/webhook', (req, res) => {
 app.post('/webhook', (req, res) => {
 	// reply block
 	let reply_token = req.body.events[0].replyToken
-	reply(reply_token, 'Hello I love TESA')
+	if (req.body.events[0].type === 'beacon') {
+		reply(reply_token, JSON.stringify(req.body.events[0]))
+	} else {
+		reply(reply_token, req.body.events[0].message.text)
+	}
   res.sendStatus(200)
 })
 
@@ -49,11 +53,7 @@ function reply(reply_token, msg) {
     replyToken: reply_token,
 		messages: [{
 				type: 'text',
-				text: 'Hello'
-		},
-		{
-				type: 'text',
-				text: 'How are you?'
+				text: msg
 		}]
   })
   curl('reply', body)
